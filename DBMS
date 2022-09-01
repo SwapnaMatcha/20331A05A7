@@ -1,278 +1,1110 @@
-#include<stdio.h>
-#include<stdlib.h>
-struct student
-{
- int rollno;
- char name[30];
- float mark;
-}stud;
-//    FUNCTION TO INSERT RECORDS TO THE FILE
-void insert()
-{
- FILE *fp;
- fp = fopen("Record", "a");
- printf("Enter the Roll no   :");
- scanf("%d", &stud.rollno);
- printf("Enter the Name      :");
- scanf("%s",stud.name);
- printf("Enter the mark      :");
- scanf("%f", &stud.mark);
- fwrite(&stud, sizeof(stud), 1, fp);
- fclose(fp);
-}
-//    FUNCTION TO DISPLAY RECORDS
-void disp()
-{
- FILE *fp1;
- fp1 = fopen("Record", "r");
- printf("\nRoll Number\tName\tMark\n\n");
- while (fread(&stud, sizeof(stud), 1, fp1))
- printf("  %d\t\t%s\t%.2f\n", stud.rollno, stud.name, stud.mark);
- fclose(fp1);
-}
-int avlrollno(int rno)
-{
- FILE *fp;
- int c = 0;
- fp = fopen("Record", "r");
- while (!feof(fp))
- {
-  fread(&stud, sizeof(stud), 1, fp);
+nclude <stdio.h>
 
-  if (rno == stud.rollno)
-  {
-   fclose(fp);
-   return 1;
-  }
- }
- fclose(fp);
- return 0;
-}
-//    FUNCTION TO SEARCH THE GIVEN RECORD
-void search()
+#include <stdlib.h>
+
+#include <string.h>
+
+struct emp
+
 {
- FILE *fp2;
- int r, s, avl;
- printf("\nEnter the Roll no you want to search  :");
- scanf("%d", &r);
- avl = avlrollno(r);
- if (avl == 0)
-  printf("Roll No %d is not available in the file\n",r);
- else
- {
-  fp2 = fopen("Record", "r");
-  while (fread(&stud, sizeof(stud), 1, fp2))
-  {
-   s = stud.rollno;
-   if (s == r)
-   {
-    printf("\nRoll no = %d", stud.rollno);
-    printf("\nName    = %s", stud.name);
-    printf("\nMark    = %.2f\n", stud.mark);
-   }
-  }
-  fclose(fp2);
- }
-}
-//    FUNCTION TO DELETE A RECORD
+
+    char name[50];
+
+    float salary;
+
+    int age;
+
+    int id;
+
+};
+
+struct emp e, e1;
 
 
-void deletefile()
+long int size = sizeof(e);
+
+
+FILE *fp, *ft;
+
+
+void addrecord()
+
 {
- FILE *fpo;
- FILE *fpt;
- int r, s;
- printf("Enter the Roll no you want to delete :");
- scanf("%d", &r);
- if (avlrollno(r) == 0)
-  printf("Roll no %d is not available in the file\n", r);
- else
- {
-  fpo = fopen("Record", "r");
-  fpt = fopen("TempFile", "w");
-  while (fread(&stud, sizeof(stud), 1, fpo))
-  {
-   s = stud.rollno;
-   if (s != r)
-    fwrite(&stud, sizeof(stud), 1, fpt);
-  }
-  fclose(fpo);
-  fclose(fpt);
-  fpo = fopen("Record", "w");
-  fpt = fopen("TempFile", "r");
-  while (fread(&stud, sizeof(stud), 1, fpt))
-   fwrite(&stud, sizeof(stud), 1, fpo);
-  printf("\nRECORD DELETED\n");
-  fclose(fpo);
-  fclose(fpt);
- }
+
+    fseek(fp, 0, SEEK_END);
+
+
+    printf("\nEnter Name : ");
+
+    scanf("%s", e.name);
+
+
+    printf("\nEnter Age : ");
+
+    scanf("%d", &e.age);
+
+
+    printf("\nEnter Salary : ");
+
+    scanf("%f", &e.salary);
+
+
+    printf("\nEnter id number ");
+
+    scanf("%d", &e.id);
+
+
+    fwrite(&e, size, 1, fp);
 
 }
-//    FUNCTION TO UPDATE THE RECORD
-void update()
+
+
+void deleterecord()
+
 {
- int avl;
- FILE *fpt;
- FILE *fpo;
- int s, r, ch;
- printf("Enter roll number to update:");
- scanf("%d", &r);
- avl = avlrollno(r);
- if (avl == 0)
- {
-  printf("Roll number %d is not Available in the file", r);
- }
- else
- {
-  fpo = fopen("Record", "r");
-  fpt = fopen("TempFile", "w");
-  while (fread(&stud, sizeof(stud), 1, fpo))
-  {
-   s = stud.rollno;
-   if (s != r)
-    fwrite(&stud, sizeof(stud), 1, fpt);
-   else
-   {
-    printf("\n\t1. Update Name of Roll Number %d", r);
-    printf("\n\t2. Update Mark of Roll Number %d", r);
-    printf("\n\t3. Update both Name and Mark of Roll Number %d", r);
-    printf("\nEnter your choice:");
-    scanf("%d", &ch);
-    switch (ch)
+
+
+    char empname[50];
+
+
+    printf("\nEnter employee "
+
+           "name to delete : ");
+
+    scanf("%s", empname);
+
+
+    ft = fopen("temp.txt", "wb");
+
+    rewind(fp);
+
+
+    while (fread(&e, size, 1, fp) == 1)
+
     {
-    case 1:
-     printf("Enter Name:");
-     scanf("%s",stud.name);
-     break;
-    case 2:
-     printf("Enter Mark : ");
-     scanf("%f", &stud.mark);
-     break;
-    case 3:
-     printf("Enter Name: ");
-     scanf("%s",stud.name);
-     printf("Enter Mark: ");
-     scanf("%f", &stud.mark);
-     break;
-    default:
-     printf("Invalid Selection");
-     break;
+
+        if (strcmp(e.name, empname) != 0)
+
+            fwrite(&e, size, 1, ft);
+
     }
-    fwrite(&stud, sizeof(stud), 1, fpt);
-   }
-  }
-  fclose(fpo);
-  fclose(fpt);
-  fpo = fopen("Record", "w");
-  fpt = fopen("TempFile", "r");
-  while (fread(&stud, sizeof(stud), 1, fpt))
-  {
-   fwrite(&stud, sizeof(stud), 1, fpo);
-  }
-  fclose(fpo);
-  fclose(fpt);
-  printf("RECORD UPDATED");
- }
-}
-/* FUNCTION TO SORT THE RECORD */
-void sort()
-{
- int a[20], count = 0, i, j, t, c;
- FILE *fpo;
- fpo = fopen("Record", "r");
- while (fread(&stud, sizeof(stud), 1, fpo))
- {
-  a[count] = stud.rollno;
-  count++;
- }
- c = count;
- for (i = 0; i<count - 1; i++)
- {
-  for (j = i + 1; j<count; j++)
-  {
-   if (a[i]>a[j])
-   {
-    t = a[i];
-    a[i] = a[j];
-    a[j] = t;
-   }
-  }
- }
- printf("Roll No.\tName\t\tMark\n\n");
- count = c;
- for (i = 0; i<count; i++)
- {
-  rewind(fpo);
-  while (fread(&stud, sizeof(stud), 1, fpo))
-  {
-   if (a[i] == stud.rollno)
-    printf("\n %d\t\t %s \t\t %2f",stud.rollno, stud.name, stud.mark);
-  }
 
- }
-}
-//    FUNCTION TO CHECK GIVEN ROLL NO IS AVAILABLE //
 
-//FUNCTION TO CHECK THE FILE IS EMPTY OR NOT
-int empty()
-{
- int c = 0;
- FILE *fp;
- fp = fopen("Record", "r");
- while (fread(&stud, sizeof(stud), 1, fp))
-  c = 1;
- fclose(fp);
- return c;
-}
-// MAIN PROGRAM
-void main()
-{
- int c, emp;
- do
- {
-  printf("\n\t---Select your choice---------\n");
-  printf("\n\t1. INSERT\n\t2. DISPLAY\n\t3. SEARCH");
-  printf("\n\t4. DELETE\n\t5. UPDATE\n\t6. SORT");
-  printf("\n\t7. EXIT");
-  printf("\n\n------------------------------------------\n");
-  printf("\nEnter your choice:");
-  scanf("%d", &c);
-  printf("\n");
-  switch (c)
-  {
-  case 1:
-   insert();
-   break;
-  case 2:
-   emp = empty();
-   if (emp == 0)
-    printf("\nThe file is EMPTY\n");
-   else
-    disp();
-   break;
-  case 3:
-   search();
-   break;
-  case 4:
-   deletefile();
-   break;
-  case 5:
-   update();
-   break;
-  case 6:
-   emp = empty();
-   if (emp == 0)
-    printf("\n The file is EMPTY\n");
-   else
-    sort();
-   break;
-  case 7:
-   exit(1);
-   break;
-  default:
-   printf("\nYour choice is wrong\nPlease try again...\n");
-   break;
+    fclose(fp);
 
-  }
- } while (c != 7);
+    fclose(ft);
+
+    remove("data.txt");
+
+    rename("temp.txt", "data.txt");
+
+    fp = fopen("data.txt", "rb+");
+
 }
+
+void insert_by_name()
+
+{
+
+    char empname3[50];
+
+
+    printf("\nEnter employee name after which new record need to insert : ");
+
+    scanf("%s", empname3);
+
+
+    ft = fopen("temp.txt", "wb");
+
+    rewind(fp);
+
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        if (strcmp(e.name, empname3) != 0)
+
+        {
+
+            fwrite(&e, size, 1, ft);
+
+        }
+
+        else
+
+        {
+
+            fwrite(&e, size, 1, ft);
+
+            printf("\nEnter new record Name : ");
+
+            scanf("%s", e1.name);
+
+
+            printf("\nEnter new record Age : ");
+
+            scanf("%d", &e1.age);
+
+
+            printf("\nEnter new record Salary : ");
+
+            scanf("%f", &e1.salary);
+
+
+            printf("\nEnter new record id number ");
+
+            scanf("%d", &e1.id);
+
+            fwrite(&e1, size, 1, ft);
+
+        }
+
+    }
+
+    fclose(fp);
+
+    fclose(ft);
+
+    remove("data.txt");
+
+    rename("temp.txt", "data.txt");
+
+    fp = fopen("data.txt", "rb+");
+
+}
+
+
+void displayrecord()
+
+{
+
+
+    rewind(fp);
+
+    printf("\nNAME\t\tAGE\t\tSALARY\t\tID\n");
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+
+        printf("\n\n\n\t");
+
+    }
+
+}
+
+void modifyrecord()
+
+{
+
+
+    char empname[50];
+
+    printf("\nEnter employee name to modify : ");
+
+    scanf("%s", empname);
+
+
+    rewind(fp);
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        if (strcmp(e.name, empname) == 0)
+
+        {
+
+            printf("\nEnter new name:");
+
+            scanf("%s", e.name);
+
+            printf("\nEnter new age :");
+
+            scanf("%d", &e.age);
+
+            printf("\nEnter new salary :");
+
+            scanf("%f", &e.salary);
+
+            printf("\nEnter new id number :");
+
+            scanf("%d", &e.id);
+
+
+            fseek(fp, -size, SEEK_CUR);
+
+            fwrite(&e, size, 1, fp);
+
+            break;
+
+        }
+
+    }
+
+}
+
+void searchbyname()
+
+{
+
+    int option;
+
+    int on = 0;
+
+    printf("1.search by name\n2.search by salary\n3.search by age\n4.search by id\nenter your option\n");
+
+    scanf("%d", &option);
+
+    switch (option)
+
+    {
+
+    case 1:
+
+    {
+
+        char empname2[50];
+
+        printf("\nEnter employee name to search : ");
+
+        scanf("%s", empname2);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            if (strcmp(e.name, empname2) == 0)
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            on = on + 1;
+
+        }
+
+    }
+
+    break;
+
+
+    case 2:
+
+    {
+
+        int emps;
+
+        int k;
+
+        int i;
+
+        printf("\nEnter employee salary to search : ");
+
+        scanf("%d", &emps);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            k = e.salary;
+
+
+            if (k == emps)
+
+            {
+
+                on = on + 1;
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            }
+
+        }
+
+    }
+
+    break;
+
+    case 3:
+
+    {
+
+        int emps;
+
+        int k;
+
+        int i;
+
+        printf("\nEnter employee age to search : ");
+
+        scanf("%d", &emps);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            k = e.age;
+
+
+            if (k == emps)
+
+            {
+
+                on = on + 1;
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            }
+
+        }
+
+    }
+
+    break;nclude <stdio.h>
+
+#include <stdlib.h>
+
+#include <string.h>
+
+struct emp
+
+{
+
+    char name[50];
+
+    float salary;
+
+    int age;
+
+    int id;
+
+};
+
+struct emp e, e1;
+
+
+long int size = sizeof(e);
+
+
+FILE *fp, *ft;
+
+
+void addrecord()
+
+{
+
+    fseek(fp, 0, SEEK_END);
+
+
+    printf("\nEnter Name : ");
+
+    scanf("%s", e.name);
+
+
+    printf("\nEnter Age : ");
+
+    scanf("%d", &e.age);
+
+
+    printf("\nEnter Salary : ");
+
+    scanf("%f", &e.salary);
+
+
+    printf("\nEnter id number ");
+
+    scanf("%d", &e.id);
+
+
+    fwrite(&e, size, 1, fp);
+
+}
+
+
+void deleterecord()
+
+{
+
+
+    char empname[50];
+
+
+    printf("\nEnter employee "
+
+           "name to delete : ");
+
+    scanf("%s", empname);
+
+
+    ft = fopen("temp.txt", "wb");
+
+    rewind(fp);
+
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        if (strcmp(e.name, empname) != 0)
+
+            fwrite(&e, size, 1, ft);
+
+    }
+
+
+    fclose(fp);
+
+    fclose(ft);
+
+    remove("data.txt");
+
+    rename("temp.txt", "data.txt");
+
+    fp = fopen("data.txt", "rb+");
+
+}
+
+void insert_by_name()
+
+{
+
+    char empname3[50];
+
+
+    printf("\nEnter employee name after which new record need to insert : ");
+
+    scanf("%s", empname3);
+
+
+    ft = fopen("temp.txt", "wb");
+
+    rewind(fp);
+
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        if (strcmp(e.name, empname3) != 0)
+
+        {
+
+            fwrite(&e, size, 1, ft);
+
+        }
+
+        else
+
+        {
+
+            fwrite(&e, size, 1, ft);
+
+            printf("\nEnter new record Name : ");
+
+            scanf("%s", e1.name);
+
+
+            printf("\nEnter new record Age : ");
+
+            scanf("%d", &e1.age);
+
+
+            printf("\nEnter new record Salary : ");
+
+            scanf("%f", &e1.salary);
+
+
+            printf("\nEnter new record id number ");
+
+            scanf("%d", &e1.id);
+
+            fwrite(&e1, size, 1, ft);
+
+        }
+
+    }
+
+    fclose(fp);
+
+    fclose(ft);
+
+    remove("data.txt");
+
+    rename("temp.txt", "data.txt");
+
+    fp = fopen("data.txt", "rb+");
+
+}
+
+
+void displayrecord()
+
+{
+
+
+    rewind(fp);
+
+    printf("\nNAME\t\tAGE\t\tSALARY\t\tID\n");
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+
+        printf("\n\n\n\t");
+
+    }
+
+}
+
+void modifyrecord()
+
+{
+
+
+    char empname[50];
+
+    printf("\nEnter employee name to modify : ");
+
+    scanf("%s", empname);
+
+
+    rewind(fp);
+
+    while (fread(&e, size, 1, fp) == 1)
+
+    {
+
+        if (strcmp(e.name, empname) == 0)
+
+        {
+
+            printf("\nEnter new name:");
+
+            scanf("%s", e.name);
+
+            printf("\nEnter new age :");
+
+            scanf("%d", &e.age);
+
+            printf("\nEnter new salary :");
+
+            scanf("%f", &e.salary);
+
+            printf("\nEnter new id number :");
+
+            scanf("%d", &e.id);
+
+
+            fseek(fp, -size, SEEK_CUR);
+
+            fwrite(&e, size, 1, fp);
+
+            break;
+
+        }
+
+    }
+
+}
+
+void searchbyname()
+
+{
+
+    int option;
+
+    int on = 0;
+
+    printf("1.search by name\n2.search by salary\n3.search by age\n4.search by id\nenter your option\n");
+
+    scanf("%d", &option);
+
+    switch (option)
+
+    {
+
+    case 1:
+
+    {
+
+        char empname2[50];
+
+        printf("\nEnter employee name to search : ");
+
+        scanf("%s", empname2);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            if (strcmp(e.name, empname2) == 0)
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            on = on + 1;
+
+        }
+
+    }
+
+    break;
+
+
+    case 2:
+
+    {
+
+        int emps;
+
+        int k;
+
+        int i;
+
+        printf("\nEnter employee salary to search : ");
+
+        scanf("%d", &emps);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            k = e.salary;
+
+
+            if (k == emps)
+
+            {
+
+                on = on + 1;
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            }
+
+        }
+
+    }
+
+    break;
+
+    case 3:
+
+    {
+
+        int emps;
+
+        int k;
+
+        int i;
+
+        printf("\nEnter employee age to search : ");
+
+        scanf("%d", &emps);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            k = e.age;
+
+
+            if (k == emps)
+
+            {
+
+                on = on + 1;
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            }
+
+        }
+
+    }
+
+    break;
+
+    case 4:
+
+    {
+
+
+        int emps;
+
+        int k;
+
+        int i;
+
+        printf("\nEnter employee id to search : ");
+
+        scanf("%d", &emps);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            k = e.id;
+
+
+            if (k == emps)
+
+            {
+
+                on = on + 1;
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            }
+
+        }
+
+    }
+
+    break;
+
+    default:
+
+        printf("invalid option..\n");
+
+        on=on+1;
+
+        break;
+
+    }
+
+    if (on == 0)
+
+    {
+
+        printf("The given search item cannot be matched with any record");
+
+    }
+
+}
+
+
+int main()
+
+{
+
+    int choice;
+
+
+    fp = fopen("data.txt", "rb+");
+
+    if (fp == NULL)
+
+    {
+
+        fp = fopen("data.txt", "wb+");
+
+    }
+
+    if (fp == NULL)
+
+    {
+
+        printf("\nCannot open file...");
+
+        exit(1);
+
+    }
+
+
+    while (1)
+
+    {
+
+        printf("\n1. ADD RECORD\n");
+
+        printf("2. DELETE RECORD\n");
+
+        printf("3. DISPLAY RECORDS\n");
+
+
+        printf("4. MODIFY RECORD\n");
+
+
+        printf("5. SEARCH(by name,id,age...)\n6. INSERT DATA\n7. EXIT");
+
+        printf("\nENTER YOUR CHOICE...\n");
+
+        fflush(stdin);
+
+        scanf("%d", &choice);
+
+
+        switch (choice)
+
+        {
+
+        case 1:
+
+
+            addrecord();
+
+            break;
+
+
+        case 2:
+
+            deleterecord();
+
+            break;
+
+
+        case 3:
+
+
+            displayrecord();
+
+            break;
+
+
+        case 4:
+
+
+            modifyrecord();
+
+            break;
+
+
+        case 5:
+
+            searchbyname();
+
+            Break;
+
+        Case 6:
+
+            insert_by_name();
+
+            break;
+
+
+        case 7:
+
+            fclose(fp);
+
+            exit(0);
+
+            break;
+
+
+        default:
+
+            printf("\nINVALID CHOICE...\n");
+
+        }
+
+    }
+
+
+
+
+    case 4:
+
+    {
+
+
+        int emps;
+
+        int k;
+
+        int i;
+
+        printf("\nEnter employee id to search : ");
+
+        scanf("%d", &emps);
+
+        rewind(fp);
+
+
+        while (fread(&e, size, 1, fp) == 1)
+
+        {
+
+            k = e.id;
+
+
+            if (k == emps)
+
+            {
+
+                on = on + 1;
+
+                printf("\n%s\t\t%d\t\t%.2f\t%10d", e.name, e.age, e.salary, e.id);
+
+            }
+
+        }
+
+    }
+
+    break;
+
+    default:
+
+        printf("invalid option..\n");
+
+        on=on+1;
+
+        break;
+
+    }
+
+    if (on == 0)
+
+    {
+
+        printf("The given search item cannot be matched with any record");
+
+    }
+
+}
+
+
+int main()
+
+{
+
+    int choice;
+
+
+    fp = fopen("data.txt", "rb+");
+
+    if (fp == NULL)
+
+    {
+
+        fp = fopen("data.txt", "wb+");
+
+    }
+
+    if (fp == NULL)
+
+    {
+
+        printf("\nCannot open file...");
+
+        exit(1);
+
+    }
+
+
+    while (1)
+
+    {
+
+        printf("\n1. ADD RECORD\n");
+
+        printf("2. DELETE RECORD\n");
+
+        printf("3. DISPLAY RECORDS\n");
+
+
+        printf("4. MODIFY RECORD\n");
+
+
+        printf("5. SEARCH(by name,id,age...)\n6. INSERT DATA\n7. EXIT");
+
+        printf("\nENTER YOUR CHOICE...\n");
+
+        fflush(stdin);
+
+        scanf("%d", &choice);
+
+
+        switch (choice)
+
+        {
+
+        case 1:
+
+
+            addrecord();
+
+            break;
+
+
+        case 2:
+
+            deleterecord();
+
+            break;
+
+
+        case 3:
+
+
+            displayrecord();
+
+            break;
+
+
+        case 4:
+
+
+            modifyrecord();
+
+            break;
+
+
+        case 5:
+
+            searchbyname();
+
+            Break;
+
+        Case 6:
+
+            insert_by_name();
+
+            break;
+
+
+        case 7:
+
+            fclose(fp);
+
+            exit(0);
+
+            break;
+
+
+        default:
+
+            printf("\nINVALID CHOICE...\n");
+
+        }
+
+    }
+
+
